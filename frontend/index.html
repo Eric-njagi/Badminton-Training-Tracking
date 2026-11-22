@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f5ef">
+  <title>Rally / Coach desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17241f;
+      --muted: #748078;
+      --line: #e5e9e1;
+      --paper: #ffffff;
+      --canvas: #f3f5ef;
+      --forest: #244b3a;
+      --green: #2f7654;
+      --lime: #d7ed79;
+      --coral: #e77c5d;
+      --yellow: #f0c967;
+      --shadow: 0 8px 28px rgba(27, 45, 35, .055);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--canvas); color: var(--ink); font-family: "DM Sans", sans-serif; font-size: 14px; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .app { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
+    .sidebar { display: flex; flex-direction: column; padding: 26px 16px 18px; background: var(--forest); color: #fff; }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 34px; font: 800 20px Manrope, sans-serif; letter-spacing: 0; }
+    .brand-mark { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: var(--lime); color: var(--forest); font: 800 16px Manrope, sans-serif; }
+    .brand small { display: block; margin-top: 1px; color: #b7c8bd; font: 500 10px "DM Sans", sans-serif; }
+    .nav-label { padding: 0 11px 9px; color: #a4b8aa; font-size: 10px; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+    .nav { display: grid; gap: 4px; }
+    .nav button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 12px; border: 0; border-radius: 7px; background: transparent; color: #cfdbd2; text-align: left; transition: background .16s, color .16s; }
+    .nav button:hover, .nav button.active { background: #355a47; color: white; }
+    .nav button.active { box-shadow: inset 3px 0 var(--lime); }
+    .nav-icon { display: inline-grid; width: 18px; place-items: center; color: #b2c2b7; font-size: 15px; }
+    .side-bottom { margin-top: auto; }
+    .coach-card { padding: 14px 12px; border: 1px solid #496b57; border-radius: 8px; background: #2b523f; }
+    .coach-card strong { display: block; margin-bottom: 5px; font: 700 12px Manrope, sans-serif; }
+    .coach-card p { margin: 0; color: #bdcfc2; font-size: 11px; line-height: 1.55; }
+    .coach-user { display: flex; align-items: center; gap: 10px; margin: 18px 5px 0; padding-top: 16px; border-top: 1px solid #496b57; }
+    .avatar { display: grid; flex: 0 0 auto; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #e5a682; color: #4b3024; font-weight: 700; }
+    .coach-user b { display: block; font-size: 12px; }
+    .coach-user small { color: #b2c2b7; font-size: 10px; }
+    main { min-width: 0; padding: 28px clamp(20px, 3.2vw, 48px) 48px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 27px; }
+    .crumb { color: var(--muted); font-size: 12px; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .date-picker { min-height: 38px; padding: 0 11px; border: 1px solid var(--line); border-radius: 6px; background: white; color: var(--ink); }
+    .button-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 39px; padding: 0 14px; border: 0; border-radius: 6px; background: var(--forest); color: white; font-weight: 700; transition: background .16s, transform .16s; }
+    .button-primary:hover { transform: translateY(-1px); background: #315d46; }
+    .button-light { min-height: 34px; padding: 0 11px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: var(--ink); font-size: 12px; font-weight: 600; }
+    .page-title { margin: 0; font: 800 26px Manrope, sans-serif; letter-spacing: 0; }
+    .page-subtitle { margin: 7px 0 0; color: var(--muted); font-size: 13px; }
+    .heading-row { display: flex; align-items: end; justify-content: space-between; gap: 14px; margin-bottom: 21px; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; margin-bottom: 21px; }
+    .stat { min-width: 0; padding: 16px 17px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); box-shadow: var(--shadow); }
+    .stat-label { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 11px; font-weight: 600; }
+    .stat-icon { display: grid; width: 26px; height: 26px; place-items: center; border-radius: 6px; background: #eef4e8; color: var(--green); font-size: 14px; }
+    .stat-value { margin-top: 9px; font: 800 25px Manrope, sans-serif; }
+    .stat-note { margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .content-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(270px, .85fr); gap: 16px; align-items: start; }
+    .panel { min-width: 0; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); box-shadow: var(--shadow); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 17px 18px; border-bottom: 1px solid var(--line); }
+    .panel-head h2, .section-title { margin: 0; font: 700 14px Manrope, sans-serif; }
+    .panel-head p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+    .count-pill { padding: 5px 8px; border-radius: 4px; background: #f1f4ef; color: #58675e; font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .search-wrap { position: relative; }
+    .search-wrap input { width: 150px; height: 32px; padding: 0 9px 0 28px; border: 1px solid var(--line); border-radius: 5px; outline: 0; font-size: 11px; }
+    .search-wrap:before { position: absolute; top: 7px; left: 9px; color: #87918a; content: "⌕"; font-size: 17px; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+    th { padding: 10px 14px; background: #fafbf9; color: #8a948d; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    td { padding: 12px 14px; border-top: 1px solid #edf0eb; font-size: 11px; }
+    tbody tr { cursor: pointer; transition: background .12s; }
+    tbody tr:hover, tbody tr.selected { background: #f6f9f2; }
+    .player-name { display: flex; align-items: center; gap: 9px; }
+    .player-name .avatar { width: 29px; height: 29px; font-size: 10px; }
+    .player-name b { font-size: 11px; font-weight: 700; }
+    .player-name small { display: block; margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .skill-inline { display: flex; align-items: center; gap: 7px; }
+    .mini-track { overflow: hidden; width: 52px; height: 5px; border-radius: 5px; background: #edf0eb; }
+    .mini-track i { display: block; height: 100%; border-radius: 5px; background: var(--green); }
+    .attendance-toggle { min-width: 72px; min-height: 27px; border: 1px solid #dfe6dc; border-radius: 4px; background: #f7faf4; color: var(--green); font-size: 10px; font-weight: 700; }
+    .attendance-toggle.present { border-color: #dce7af; background: #f2f7da; color: #52671f; }
+    .attendance-toggle.absent { border-color: #eee5e1; background: #faf8f7; color: #a17465; }
+    .focus-panel { overflow: hidden; }
+    .focus-hero { position: relative; min-height: 128px; padding: 18px; background: #264b3a url("https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=900&q=80") center 48% / cover; color: white; }
+    .focus-hero:before { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(22, 53, 38, .94), rgba(22, 53, 38, .38)); content: ""; }
+    .focus-hero > * { position: relative; }
+    .eyebrow { color: var(--lime); font-size: 9px; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+    .focus-hero h2 { max-width: 260px; margin: 7px 0 4px; font: 800 19px Manrope, sans-serif; }
+    .focus-hero p { margin: 0; color: #e0e9df; font-size: 11px; }
+    .focus-body { padding: 16px 18px 18px; }
+    .selected-player { display: flex; align-items: center; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+    .selected-player .avatar { width: 36px; height: 36px; }
+    .selected-player strong { display: block; font-size: 12px; }
+    .selected-player small { color: var(--muted); font-size: 10px; }
+    .focus-label { margin: 14px 0 8px; color: var(--muted); font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    .drill { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #edf0eb; }
+    .drill-number { display: grid; flex: 0 0 auto; width: 23px; height: 23px; place-items: center; border-radius: 5px; background: #edf4df; color: var(--green); font-size: 10px; font-weight: 700; }
+    .drill b { display: block; font-size: 11px; }
+    .drill small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.45; }
+    .plan-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 13px; }
+    .plan-footer span { color: var(--muted); font-size: 10px; }
+    .skill-list { display: grid; gap: 13px; padding: 15px 18px 18px; }
+    .skill-row { display: grid; grid-template-columns: 1fr auto; gap: 7px 12px; align-items: center; }
+    .skill-row label { font-size: 11px; font-weight: 600; }
+    .skill-row output { color: var(--muted); font-size: 10px; }
+    .skill-row input { grid-column: 1 / -1; width: 100%; height: 5px; margin: 0; accent-color: var(--green); }
+    .view { display: none; animation: enter .2s ease-out; }
+    .view.active { display: block; }
+    @keyframes enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .roster-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+    .roster-item { padding: 15px; border: 1px solid var(--line); border-radius: 7px; background: white; cursor: pointer; transition: border-color .15s, transform .15s; }
+    .roster-item:hover { transform: translateY(-2px); border-color: #9eb79d; }
+    .roster-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .roster-top strong { font-size: 12px; }
+    .roster-top small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .roster-score { margin-left: auto; color: var(--green); font: 800 19px Manrope, sans-serif; }
+    .roster-meta { display: flex; justify-content: space-between; padding-top: 11px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+    .attendance-layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(230px, .8fr); gap: 15px; }
+    .attendance-summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 16px; }
+    .summary-box { padding: 13px; border-radius: 6px; background: #f5f7f2; }
+    .summary-box span { color: var(--muted); font-size: 10px; }
+    .summary-box strong { display: block; margin-top: 5px; font: 800 22px Manrope, sans-serif; }
+    .plans-list { display: grid; gap: 10px; }
+    .plan-row { display: grid; grid-template-columns: minmax(150px, .8fr) minmax(150px, 1.2fr) auto; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 6px; background: white; }
+    .plan-athlete { display: flex; align-items: center; gap: 9px; }
+    .plan-athlete .avatar { width: 30px; height: 30px; font-size: 10px; }
+    .plan-athlete b { font-size: 11px; }
+    .plan-row > span { color: var(--muted); font-size: 11px; }
+    .plan-row > strong { color: var(--green); font-size: 10px; text-align: right; }
+    .empty-state { padding: 28px; color: var(--muted); text-align: center; font-size: 12px; }
+    dialog { width: min(440px, calc(100vw - 28px)); padding: 0; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 24px 80px #1a2b1d44; }
+    dialog::backdrop { background: #18251fcc; backdrop-filter: blur(2px); }
+    .modal-head { display: flex; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+    .modal-head h2 { margin: 0; font: 800 17px Manrope, sans-serif; }
+    .modal-close { border: 0; background: transparent; color: var(--muted); font-size: 20px; }
+    .player-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 19px 20px; }
+    .field { display: grid; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: var(--muted); font-size: 10px; font-weight: 700; }
+    .field input, .field select { width: 100%; height: 37px; padding: 0 10px; border: 1px solid var(--line); border-radius: 5px; outline: 0; }
+    .field input:focus, .field select:focus { border-color: #77a17e; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 8px; grid-column: 1 / -1; padding-top: 5px; }
+    .toast { position: fixed; right: 22px; bottom: 20px; z-index: 3; padding: 11px 15px; border-radius: 6px; background: var(--forest); color: white; box-shadow: var(--shadow); opacity: 0; transform: translateY(8px); pointer-events: none; transition: .2s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    @media (max-width: 1000px) {
+      .app { grid-template-columns: 190px minmax(0, 1fr); }
+      .content-grid { grid-template-columns: minmax(0, 1.2fr) minmax(250px, .8fr); }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .roster-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .app { display: block; padding-bottom: 61px; }
+      .sidebar { position: fixed; z-index: 5; right: 0; bottom: 0; left: 0; display: block; height: 58px; padding: 0 8px; }
+      .brand, .nav-label, .side-bottom { display: none; }
+      .nav { height: 100%; grid-template-columns: repeat(4, 1fr); align-items: center; gap: 2px; }
+      .nav button { display: grid; justify-items: center; gap: 2px; height: 48px; padding: 5px 2px; border-radius: 5px; font-size: 9px; }
+      .nav button.active { box-shadow: inset 0 2px var(--lime); }
+      .nav-icon { font-size: 14px; }
+      main { padding: 19px 16px 30px; }
+      .topbar { align-items: start; margin-bottom: 21px; }
+      .top-actions { gap: 6px; }
+      .date-picker { width: 132px; min-height: 35px; font-size: 10px; }
+      .top-actions .button-primary { min-height: 35px; padding: 0 10px; font-size: 11px; }
+      .content-grid, .attendance-layout { grid-template-columns: 1fr; }
+      .focus-panel { grid-row: 1; }
+      .heading-row { align-items: start; }
+      .page-title { font-size: 22px; }
+      .roster-grid { grid-template-columns: 1fr; }
+      .plan-row { grid-template-columns: 1fr auto; gap: 9px; }
+      .plan-row > span { grid-column: 1 / -1; grid-row: 2; }
+      .plan-row > strong { grid-column: 2; grid-row: 1; }
+    }
+    @media (max-width: 420px) {
+      .stats { gap: 8px; }
+      .stat { padding: 12px; }
+      .stat-value { font-size: 22px; }
+      .stat-label { font-size: 10px; }
+      .crumb { max-width: 100px; line-height: 1.4; }
+      .search-wrap input { width: 115px; }
+      .panel-head { padding: 14px; }
+      td { padding: 10px; }
+      th { padding: 9px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">R</span><span>rally<small>COACH DESK</small></span></div>
+      <div class="nav-label">Workspace</div>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="active" data-view="dashboard"><span class="nav-icon">◫</span>Overview</button>
+        <button data-view="athletes"><span class="nav-icon">♧</span>Athletes</button>
+        <button data-view="attendance"><span class="nav-icon">✓</span>Attendance</button>
+        <button data-view="plans"><span class="nav-icon">◎</span>Training plans</button>
+      </nav>
+      <div class="side-bottom">
+        <div class="coach-card"><strong>Training tip</strong><p>Keep each drill focused. Short, consistent practice builds better habits.</p></div>
+        <div class="coach-user"><span class="avatar">JM</span><span><b>Jordan Miller</b><small>Head coach</small></span></div>
+      </div>
+    </aside>
+    <main>
+      <div class="topbar">
+        <div class="crumb">Rally Club <span aria-hidden="true">/</span> <b id="crumb-label">Overview</b></div>
+        <div class="top-actions">
+          <input class="date-picker" id="session-date" type="date" aria-label="Training date">
+          <button class="button-primary" id="add-player-open"><span aria-hidden="true">＋</span> Add player</button>
+        </div>
+      </div>
+
+      <section class="view active" id="view-dashboard">
+        <div class="heading-row"><div><h1 class="page-title">Training overview</h1><p class="page-subtitle" id="welcome-date">Your club at a glance.</p></div></div>
+        <div class="stats" id="stats"></div>
+        <div class="content-grid">
+          <section class="panel">
+            <div class="panel-head"><div><h2>Today's roster</h2><p>Tap a player to check in or review their profile</p></div><div class="search-wrap"><input type="search" id="player-search" placeholder="Find player" aria-label="Find player"></div></div>
+            <div class="table-scroll"><table><thead><tr><th>Player</th><th>Level</th><th>Focus area</th><th>Attendance</th></tr></thead><tbody id="roster-body"></tbody></table></div>
+          </section>
+          <div class="panel focus-panel" id="daily-focus"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-athletes">
+        <div class="heading-row"><div><h1 class="page-title">Athletes</h1><p class="page-subtitle">Player profiles and current skill levels.</p></div><button class="button-primary add-player-shortcut">＋ Add player</button></div>
+        <div class="roster-grid" id="athlete-grid"></div>
+      </section>
+
+      <section class="view" id="view-attendance">
+        <div class="heading-row"><div><h1 class="page-title">Attendance</h1><p class="page-subtitle">Check-ins for the selected training day.</p></div></div>
+        <div class="attendance-layout"><section class="panel"><div class="panel-head"><div><h2>Session check-ins</h2><p id="attendance-date-label"></p></div><span class="count-pill" id="attendance-count"></span></div><div class="table-scroll"><table><thead><tr><th>Player</th><th>Level</th><th>Check-in</th></tr></thead><tbody id="attendance-body"></tbody></table></div></section><section class="panel"><div class="panel-head"><div><h2>Session summary</h2><p>Selected date</p></div></div><div class="attendance-summary" id="attendance-summary"></div></section></div>
+      </section>
+
+      <section class="view" id="view-plans">
+        <div class="heading-row"><div><h1 class="page-title">Training plans</h1><p class="page-subtitle">A personal improvement focus for every player today.</p></div></div>
+        <div class="plans-list" id="plans-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="player-dialog">
+    <div class="modal-head"><h2>Add an athlete</h2><button class="modal-close" type="button" aria-label="Close">×</button></div>
+    <form class="player-form" id="player-form">
+      <div class="field full"><label for="new-name">Player name</label><input id="new-name" name="name" required maxlength="60" placeholder="e.g. Alex Morgan"></div>
+      <div class="field"><label for="new-level">Playing level</label><select id="new-level" name="level"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select></div>
+      <div class="field"><label for="new-age">Age</label><input id="new-age" name="age" type="number" min="5" max="100" value="18"></div>
+      <div class="field full"><label for="new-skill">Starting skill score (1–5)</label><input id="new-skill" name="skill" type="number" min="1" max="5" step="0.1" value="3"></div>
+      <div class="form-actions"><button class="button-light" type="button" id="cancel-player">Cancel</button><button class="button-primary" type="submit">Save player</button></div>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const skillNames = ["Footwork", "Serve", "Clear", "Net play", "Smash"];
+    const seededPlayers = [
+      { id: "p1", name: "Maya Chen", level: "Intermediate", age: 17, color: "#d8c6ec", skills: { Footwork: 3.1, Serve: 4.0, Clear: 3.5, "Net play": 2.8, Smash: 3.4 } },
+      { id: "p2", name: "Leo Martin", level: "Advanced", age: 21, color: "#b9d8c5", skills: { Footwork: 4.2, Serve: 3.7, Clear: 4.5, "Net play": 3.2, Smash: 4.0 } },
+      { id: "p3", name: "Amara Okafor", level: "Beginner", age: 15, color: "#f2c6ad", skills: { Footwork: 2.5, Serve: 2.9, Clear: 2.1, "Net play": 3.0, Smash: 2.4 } },
+      { id: "p4", name: "Noah Williams", level: "Intermediate", age: 19, color: "#f0d992", skills: { Footwork: 3.8, Serve: 3.0, Clear: 3.6, "Net play": 3.4, Smash: 2.9 } },
+      { id: "p5", name: "Sofia Patel", level: "Advanced", age: 23, color: "#c2d4eb", skills: { Footwork: 4.4, Serve: 4.1, Clear: 3.8, "Net play": 4.0, Smash: 3.4 } },
+      { id: "p6", name: "Ethan Brooks", level: "Beginner", age: 16, color: "#e9c2ce", skills: { Footwork: 2.8, Serve: 2.3, Clear: 2.7, "Net play": 2.5, Smash: 3.0 } }
+    ];
+    const drillPlans = {
+      Footwork: [{ title: "Six-corner shadow", detail: "Move to each court corner and recover to base. 3 rounds of 45 seconds." }, { title: "Split-step reaction", detail: "Partner points to a corner; split-step, move, then reset. 3 sets of 8." }],
+      Serve: [{ title: "Target-zone serves", detail: "Place 10 low serves into each service box target. Reset your grip between sets." }, { title: "Serve and recover", detail: "Serve short, then recover to ready position. Complete 3 sets of 8." }],
+      Clear: [{ title: "High-clear consistency", detail: "Aim deep to the back tramlines. Complete 3 sets of 10 with a full follow-through." }, { title: "Clear and recover", detail: "Alternate forehand and backhand clears, returning to base after every shot." }],
+      "Net play": [{ title: "Net tumble control", detail: "Play gentle tumbling net shots over a target cord. 3 sets of 8 from each side." }, { title: "Lunge and lift", detail: "Feed to the front court, lunge to lift, then recover smoothly. 3 sets of 6 each side." }],
+      Smash: [{ title: "Smash timing", detail: "Feed high to the forehand side. Focus on contact point and balanced landing. 3 sets of 8." }, { title: "Smash and follow", detail: "Smash into a marked target, then move forward to cover the reply. 3 sets of 6." }]
+    };
+    const avatarColors = ["#d8c6ec", "#b9d8c5", "#f2c6ad", "#f0d992", "#c2d4eb", "#e9c2ce"];
+    let players = loadPlayers();
+    let selectedId = players[0]?.id || null;
+    let currentView = "dashboard";
+    let toastTimer;
+
+    function loadPlayers() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("rally.players"));
+        return Array.isArray(saved) && saved.length ? saved : structuredClone(seededPlayers);
+      } catch { return structuredClone(seededPlayers); }
+    }
+    function savePlayers() { localStorage.setItem("rally.players", JSON.stringify(players)); }
+    function localDateKey(date = new Date()) {
+      const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 10);
+    }
+    const dateInput = document.getElementById("session-date");
+    dateInput.value = localDateKey();
+    function attendanceMap() {
+      try { return JSON.parse(localStorage.getItem("rally.attendance")) || {}; } catch { return {}; }
+    }
+    function attendeesForDate() { return attendanceMap()[dateInput.value] || []; }
+    function initials(name) { return name.split(/\s+/).slice(0, 2).map(part => part[0]).join("").toUpperCase(); }
+    function averageSkill(player) { return Object.values(player.skills).reduce((sum, score) => sum + Number(score), 0) / skillNames.length; }
+    function weakestSkill(player) { return skillNames.reduce((weakest, skill) => player.skills[skill] < player.skills[weakest] ? skill : weakest, skillNames[0]); }
+    function selectedPlayer() { return players.find(player => player.id === selectedId) || players[0]; }
+    function niceDate(value) { return new Date(`${value}T12:00:00`).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }); }
+    function playerAvatar(player, sizeClass = "") { return `<span class="avatar ${sizeClass}" style="background:${player.color || avatarColors[0]}">${initials(player.name)}</span>`; }
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+    function renderStats() {
+      const present = attendeesForDate().length;
+      const total = players.length;
+      const average = total ? (players.reduce((sum, player) => sum + averageSkill(player), 0) / total).toFixed(1) : "0.0";
+      const beginner = players.filter(player => player.level === "Beginner").length;
+      const data = [["Players", total, "Registered athletes", "♧"], ["Checked in", `${present}/${total}`, `${total ? Math.round(present / total * 100) : 0}% of today's roster`, "✓"], ["Skill average", average, "Across 5 skill areas", "↗"], ["Beginner group", beginner, "Players building fundamentals", "◉"]];
+      document.getElementById("stats").innerHTML = data.map(([label, value, note, icon]) => `<article class="stat"><div class="stat-label">${label}<span class="stat-icon">${icon}</span></div><div class="stat-value">${value}</div><div class="stat-note">${note}</div></article>`).join("");
+      document.getElementById("welcome-date").textContent = `${niceDate(dateInput.value)} · ${present} player${present === 1 ? "" : "s"} checked in`;
+    }
+    function renderRoster() {
+      const attendees = attendeesForDate();
+      const query = document.getElementById("player-search").value.trim().toLowerCase();
+      const filtered = players.filter(player => player.name.toLowerCase().includes(query));
+      document.getElementById("roster-body").innerHTML = filtered.length ? filtered.map(player => {
+        const focus = weakestSkill(player);
+        const present = attendees.includes(player.id);
+        return `<tr data-player="${player.id}" class="${player.id === selectedId ? "selected" : ""}"><td><div class="player-name">${playerAvatar(player)}<span><b>${player.name}</b><small>Age ${player.age}</small></span></div></td><td>${player.level}</td><td><div class="skill-inline"><span>${focus}</span><span class="mini-track"><i style="width:${player.skills[focus] / 5 * 100}%"></i></span></div></td><td><button class="attendance-toggle ${present ? "present" : "absent"}" data-attendance="${player.id}">${present ? "✓ Present" : "＋ Check in"}</button></td></tr>`;
+      }).join("") : `<tr><td colspan="4" class="empty-state">No players match that name.</td></tr>`;
+      document.getElementById("attendance-body").innerHTML = players.map(player => {
+        const present = attendees.includes(player.id);
+        return `<tr><td><div class="player-name">${playerAvatar(player)}<span><b>${player.name}</b><small>Age ${player.age}</small></span></div></td><td>${player.level}</td><td><button class="attendance-toggle ${present ? "present" : "absent"}" data-attendance="${player.id}">${present ? "✓ Present" : "＋ Check in"}</button></td></tr>`;
+      }).join("") || `<tr><td colspan="3" class="empty-state">Add your first player to start tracking attendance.</td></tr>`;
+      const dateLabel = niceDate(dateInput.value);
+      document.getElementById("attendance-date-label").textContent = dateLabel;
+      document.getElementById("attendance-count").textContent = `${attendees.length} / ${players.length} present`;
+      document.getElementById("attendance-summary").innerHTML = `<div class="summary-box"><span>Checked in</span><strong>${attendees.length}</strong></div><div class="summary-box"><span>Not checked in</span><strong>${players.length - attendees.length}</strong></div><div class="summary-box"><span>Attendance rate</span><strong>${players.length ? Math.round(attendees.length / players.length * 100) : 0}%</strong></div><div class="summary-box"><span>Session date</span><strong style="font-size:15px">${new Date(`${dateInput.value}T12:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</strong></div>`;
+    }
+    function renderFocus() {
+      const player = selectedPlayer();
+      const container = document.getElementById("daily-focus");
+      if (!player) { container.innerHTML = `<div class="empty-state">Add an athlete to build a personal training plan.</div>`; return; }
+      const focus = weakestSkill(player);
+      const drills = drillPlans[focus];
+      const checkedIn = attendeesForDate().includes(player.id);
+      container.innerHTML = `<div class="focus-hero"><span class="eyebrow">Personal focus · ${niceDate(dateInput.value)}</span><h2>Build ${focus.toLowerCase()}</h2><p>${player.name} · ${player.skills[focus].toFixed(1)} / 5 skill rating</p></div><div class="focus-body"><div class="selected-player">${playerAvatar(player)}<span><strong>${player.name}</strong><small>${player.level} · age ${player.age} · avg ${averageSkill(player).toFixed(1)}/5</small></span></div><div class="focus-label">Today's suggested drills</div>${drills.map((drill, index) => `<div class="drill"><span class="drill-number">0${index + 1}</span><span><b>${drill.title}</b><small>${drill.detail}</small></span></div>`).join("")}<div class="skill-list">${skillNames.map(skill => `<div class="skill-row"><label for="skill-${skill.replace(/\s/g, "-")}">${skill}</label><output>${Number(player.skills[skill]).toFixed(1)} / 5</output><input id="skill-${skill.replace(/\s/g, "-")}" type="range" min="1" max="5" step="0.1" value="${player.skills[skill]}" data-skill="${skill}" aria-label="${player.name} ${skill} rating"></div>`).join("")}</div><div class="plan-footer"><span>${checkedIn ? "Checked in for today's session" : "Not checked in yet"}</span><button class="button-light" data-attendance="${player.id}">${checkedIn ? "Undo check-in" : "Mark present"}</button></div></div>`;
+    }
+    function renderAthletes() {
+      document.getElementById("athlete-grid").innerHTML = players.length ? players.map(player => {
+        const focus = weakestSkill(player);
+        return `<article class="roster-item" data-player="${player.id}"><div class="roster-top">${playerAvatar(player)}<span><strong>${player.name}</strong><small>${player.level} · Age ${player.age}</small></span><span class="roster-score">${averageSkill(player).toFixed(1)}</span></div><div class="skill-inline"><span>${focus}</span><span class="mini-track" style="flex:1"><i style="width:${player.skills[focus] / 5 * 100}%"></i></span><small>${Number(player.skills[focus]).toFixed(1)}</small></div><div class="roster-meta"><span>Today's focus</span><b>${focus}</b></div></article>`;
+      }).join("") : `<div class="empty-state">No athletes yet. Add a player to get started.</div>`;
+    }
+    function renderPlans() {
+      document.getElementById("plans-list").innerHTML = players.length ? players.map(player => {
+        const focus = weakestSkill(player);
+        return `<article class="plan-row"><div class="plan-athlete">${playerAvatar(player)}<b>${player.name}</b></div><span>${drillPlans[focus][0].title} · ${drillPlans[focus][0].detail}</span><strong>${focus} · ${player.skills[focus].toFixed(1)}/5</strong></article>`;
+      }).join("") : `<div class="empty-state">Add athletes to generate personal training plans.</div>`;
+    }
+    function renderAll() { renderStats(); renderRoster(); renderFocus(); renderAthletes(); renderPlans(); }
+    function setView(view) {
+      currentView = view;
+      document.querySelectorAll(".view").forEach(section => section.classList.toggle("active", section.id === `view-${view}`));
+      document.querySelectorAll(".nav button").forEach(button => button.classList.toggle("active", button.dataset.view === view));
+      document.getElementById("crumb-label").textContent = { dashboard: "Overview", athletes: "Athletes", attendance: "Attendance", plans: "Training plans" }[view];
+    }
+    function toggleAttendance(playerId) {
+      const allAttendance = attendanceMap();
+      const day = allAttendance[dateInput.value] || [];
+      const wasPresent = day.includes(playerId);
+      allAttendance[dateInput.value] = wasPresent ? day.filter(id => id !== playerId) : [...day, playerId];
+      localStorage.setItem("rally.attendance", JSON.stringify(allAttendance));
+      selectedId = playerId;
+      renderAll();
+      showToast(wasPresent ? "Check-in removed." : "Player checked in.");
+    }
+
+    document.querySelectorAll(".nav button").forEach(button => button.addEventListener("click", () => setView(button.dataset.view)));
+    document.getElementById("player-search").addEventListener("input", renderRoster);
+    dateInput.addEventListener("change", renderAll);
+    document.addEventListener("click", event => {
+      const attendanceButton = event.target.closest("[data-attendance]");
+      if (attendanceButton) { event.stopPropagation(); toggleAttendance(attendanceButton.dataset.attendance); return; }
+      const playerRow = event.target.closest("[data-player]");
+      if (playerRow) {
+        selectedId = playerRow.dataset.player;
+        renderAll();
+        if (playerRow.closest("#athlete-grid")) setView("dashboard");
+      }
+    });
+    document.addEventListener("input", event => {
+      if (!event.target.matches("[data-skill]")) return;
+      const player = players.find(item => item.id === selectedId);
+      if (!player) return;
+      player.skills[event.target.dataset.skill] = Number(event.target.value);
+      savePlayers();
+      renderStats(); renderRoster(); renderAthletes(); renderPlans();
+      const range = event.target;
+      const focusPanel = document.getElementById("daily-focus");
+      renderFocus();
+      const updatedRange = focusPanel.querySelector(`[data-skill="${range.dataset.skill}"]`);
+      if (updatedRange) updatedRange.focus();
+    });
+    const dialog = document.getElementById("player-dialog");
+    document.getElementById("add-player-open").addEventListener("click", () => dialog.showModal());
+    document.querySelectorAll(".add-player-shortcut").forEach(button => button.addEventListener("click", () => dialog.showModal()));
+    document.querySelector(".modal-close").addEventListener("click", () => dialog.close());
+    document.getElementById("cancel-player").addEventListener("click", () => dialog.close());
+    document.getElementById("player-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const name = form.get("name").trim();
+      const score = Number(form.get("skill"));
+      const skillSet = Object.fromEntries(skillNames.map(skill => [skill, score]));
+      const player = { id: `p${Date.now()}`, name, level: form.get("level"), age: Number(form.get("age")), color: avatarColors[players.length % avatarColors.length], skills: skillSet };
+      players = [...players, player];
+      selectedId = player.id;
+      savePlayers();
+      event.currentTarget.reset();
+      dialog.close();
+      renderAll();
+      setView(currentView);
+      showToast(`${name} added to your roster.`);
+    });
+    renderAll();
+  </script>
+</body>
+</html>
